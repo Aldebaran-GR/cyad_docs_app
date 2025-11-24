@@ -14,8 +14,12 @@ db.sqlite3
 # Virtualenv
 venv/
 
+
 # Node
 node_modules/
+
+# Entornos privados
+backend/.env
 .env
 
 # VSCode
