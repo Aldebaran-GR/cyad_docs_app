@@ -41,6 +41,3 @@ if __name__ == "__main__":
     setup_django()
     # Crear admin
     create_user("admin", "admin123", "admin@cyad.com", "ADMIN")
-    # Crear profesor y su perfil
-    user_prof = create_user("profesor1", "profesor123", "prof1@cyad.com", "PROFESOR")
-    create_profesor(user_prof, 1001, "Juan", "Pérez", "García", "juan.perez@cyad.com")

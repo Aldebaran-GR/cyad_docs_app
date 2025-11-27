@@ -80,9 +80,9 @@ def create_profesores(departamentos, user_prof):
     from academics.models import Profesor
     from accounts.models import User
     profesores = [
-        (1001, "Laura", "García", "Martínez", "laura.garcia@cyad.uam.mx", departamentos[0], "proflaura", "prof123"),
-        (1002, "Juan", "Pérez", "López", "juan.perez@cyad.uam.mx", departamentos[1], "profjuan", "prof123"),
-        (1003, "María", "Hernández", "Santos", "maria.hernandez@cyad.uam.mx", departamentos[2], "profmaria", "prof123"),
+        (1001, "Laura", "García", "Martínez", "laura.garcia@cyad.uam.mx", departamentos[0], "proflaura", "1001"),
+        (1002, "Juan", "Pérez", "López", "juan.perez@cyad.uam.mx", departamentos[1], "profjuan", "1002"),
+        (1003, "María", "Hernández", "Santos", "maria.hernandez@cyad.uam.mx", departamentos[2], "profmaria", "1003"),
     ]
     objs = []
     for num, nombre, p_ap, s_ap, correo, depto, username, password in profesores:
