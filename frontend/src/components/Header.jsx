@@ -1,9 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 
 export default function Header() {
   const { isAuthenticated, user, logout } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -16,11 +17,7 @@ export default function Header() {
         CyAD · Gestión de Documentos
       </Link>
       <div className="flex items-center gap-4">
-        {isAuthenticated && user && (
-          <span className="text-sm">
-            {user.username} ({user.role})
-          </span>
-        )}
+        
         {isAuthenticated ? (
           <button
             className="bg-white text-sky-900 font-semibold px-4 py-1 rounded shadow hover:bg-sky-100 transition"
@@ -29,12 +26,14 @@ export default function Header() {
             Logout
           </button>
         ) : (
-          <button
-            className="bg-white text-sky-900 font-semibold px-4 py-1 rounded shadow hover:bg-sky-100 transition"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+          location.pathname !== "/login" && (
+            <button
+              className="bg-white text-sky-900 font-semibold px-4 py-1 rounded shadow hover:bg-sky-100 transition"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
+          )
         )}
       </div>
     </header>
