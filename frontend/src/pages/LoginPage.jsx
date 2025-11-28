@@ -1,27 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { setAuthToken } from "../api";
+import { useAuthContext } from "../contexts/AuthContext";
+import api from "../api";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuthContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     try {
       const res = await api.post("auth/login/", { username, password });
       const { access, user } = res.data;
-      localStorage.setItem("token", access);
-      localStorage.setItem("user", JSON.stringify(user));
-      setAuthToken(access);
+      login(access, user);
+      
       if (user.role === "ADMIN") navigate("/admin");
       else if (user.role === "PROFESOR") navigate("/profesor");
       else navigate("/");
     } catch (err) {
       setError("Credenciales inválidas");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,9 +56,10 @@ export default function LoginPage() {
         </div>
         <button
           type="submit"
-          className="w-full bg-sky-700 text-white py-2 rounded hover:bg-sky-800"
+          disabled={loading}
+          className="w-full bg-sky-700 text-white py-2 rounded hover:bg-sky-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Entrar
+          {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
     </div>
