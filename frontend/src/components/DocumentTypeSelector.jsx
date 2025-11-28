@@ -1,7 +1,7 @@
 export default function DocumentTypeSelector({ onSelect }) {
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
-      <h3 className="font-semibold text-lg mb-4">Selecciona el documento que deseas crear:</h3>
+      <h3 className="font-semibold text-lg mb-4">Selecciona un documento:</h3>
       <div className="grid md:grid-cols-3 gap-4">
         <button
           onClick={() => onSelect("carta")}

@@ -7,6 +7,9 @@ import ProfesorDashboard from "./pages/ProfesorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import CartaTematica from "./pages/CartaTematica";
 import RequisitosRecuperacion from "./pages/RequisitosRecuperacion";
+import CartaTematicaPage from "./pages/CartaTematicaPage";
+import RequisitosRecuperacionPage from "./pages/RequisitosRecuperacionPage";
+import AutoevaluacionPage from "./pages/AutoevaluacionPage";
 
 export default function App() {
   return (
@@ -21,6 +24,46 @@ export default function App() {
               element={
                 <ProtectedRoute allowedRoles={["PROFESOR"]}>
                   <ProfesorDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/cartaTematica" 
+              element={
+                <ProtectedRoute allowedRoles={["PROFESOR"]}>
+                  <CartaTematicaPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/cartaTematica/:operation" 
+              element={
+                <ProtectedRoute allowedRoles={["PROFESOR"]}>
+                  <CartaTematicaPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/requisitosRecuperacion" 
+              element={
+                <ProtectedRoute allowedRoles={["PROFESOR"]}>
+                  <RequisitosRecuperacionPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/requisitosRecuperacion/:operation" 
+              element={
+                <ProtectedRoute allowedRoles={["PROFESOR"]}>
+                  <RequisitosRecuperacionPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/autoevaluacion" 
+              element={
+                <ProtectedRoute allowedRoles={["PROFESOR"]}>
+                  <AutoevaluacionPage />
                 </ProtectedRoute>
               } 
             />

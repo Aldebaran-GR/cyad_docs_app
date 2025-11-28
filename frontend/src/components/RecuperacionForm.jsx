@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 
-export default function RecuperacionForm({ onVolver, onMensaje }) {
+export default function RecuperacionForm({ onVolver, onMensaje, editData = null }) {
   const [ueas, setUeas] = useState([]);
-  const [ueaSeleccionada, setUeaSeleccionada] = useState("");
+  const [ueaSeleccionada, setUeaSeleccionada] = useState(editData?.uea || "");
   const [espacios, setEspacios] = useState([]);
   const [loading, setLoading] = useState(false);
+  const isEditing = !!editData;
 
   // Estados para Requisitos de Recuperación
   const [recuperacion, setRecuperacion] = useState({
-    duracion: "",
-    material: "",
-    notas: "",
-    requisitos: "",
-    espacio: "",
+    duracion: editData?.duracion || "",
+    material: editData?.material || "",
+    notas: editData?.notas || "",
+    requisitos: editData?.requisitos || "",
+    espacio: editData?.espacio || "",
   });
 
   useEffect(() => {
@@ -49,20 +50,26 @@ export default function RecuperacionForm({ onVolver, onMensaje }) {
     onMensaje("");
     try {
       const payload = { ...recuperacion, uea: ueaSeleccionada };
-      await api.post("academics/profesor/recuperaciones/", payload);
-      onMensaje("✓ Requisitos de recuperación guardados exitosamente.");
-      // Limpiar formulario
-      setRecuperacion({
-        duracion: "",
-        material: "",
-        notas: "",
-        requisitos: "",
-        espacio: "",
-      });
-      setUeaSeleccionada("");
+      
+      if (isEditing) {
+        await api.put(`academics/profesor/recuperaciones/${editData.id}/`, payload);
+        onMensaje("✓ Requisitos de recuperación actualizados exitosamente.");
+      } else {
+        await api.post("academics/profesor/recuperaciones/", payload);
+        onMensaje("✓ Requisitos de recuperación guardados exitosamente.");
+        // Limpiar formulario solo si estamos creando
+        setRecuperacion({
+          duracion: "",
+          material: "",
+          notas: "",
+          requisitos: "",
+          espacio: "",
+        });
+        setUeaSeleccionada("");
+      }
     } catch (err) {
       console.error(err);
-      onMensaje("✗ Error al guardar los requisitos de recuperación. Verifica los datos.");
+      onMensaje(`✗ Error al ${isEditing ? 'actualizar' : 'guardar'} los requisitos de recuperación. Verifica los datos.`);
     } finally {
       setLoading(false);
     }
@@ -71,7 +78,9 @@ export default function RecuperacionForm({ onVolver, onMensaje }) {
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Crear Requisitos de Recuperación</h3>
+        <h3 className="font-semibold text-lg">
+          {isEditing ? "Editar Requisitos de Recuperación" : "Crear Requisitos de Recuperación"}
+        </h3>
         <button
           onClick={onVolver}
           className="text-sm text-sky-700 hover:underline"
@@ -160,7 +169,10 @@ export default function RecuperacionForm({ onVolver, onMensaje }) {
         disabled={loading || !ueaSeleccionada}
         className="w-full bg-emerald-600 text-white py-3 rounded hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
       >
-        {loading ? "Guardando..." : "Guardar Requisitos de Recuperación"}
+        {loading 
+          ? (isEditing ? "Actualizando..." : "Guardando...")
+          : (isEditing ? "Actualizar Requisitos de Recuperación" : "Guardar Requisitos de Recuperación")
+        }
       </button>
     </div>
   );

@@ -1,28 +1,29 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 
-export default function CartaTematicaForm({ onVolver, onMensaje }) {
+export default function CartaTematicaForm({ onVolver, onMensaje, editData = null }) {
   const [ueas, setUeas] = useState([]);
-  const [ueaSeleccionada, setUeaSeleccionada] = useState("");
+  const [ueaSeleccionada, setUeaSeleccionada] = useState(editData?.uea || "");
   const [loading, setLoading] = useState(false);
+  const isEditing = !!editData;
   
   // Estados para Carta Temática
   const [carta, setCarta] = useState({
-    descripcion: "",
-    contenido_sintetico: "",
-    modalidad_conduccion: "",
-    modalidad_evaluacion: "",
-    conocimientos_previos: "",
-    asesorias: "",
-    bibliografia: "",
-    calendarizacion: "",
+    descripcion: editData?.descripcion || "",
+    contenido_sintetico: editData?.contenido_sintetico || "",
+    modalidad_conduccion: editData?.modalidad_conduccion || "",
+    modalidad_evaluacion: editData?.modalidad_evaluacion || "",
+    conocimientos_previos: editData?.conocimientos_previos || "",
+    asesorias: editData?.asesorias || "",
+    bibliografia: editData?.bibliografia || "",
+    calendarizacion: editData?.calendarizacion || "",
   });
 
   // Estados para Objetivo (parte de Carta Temática)
   const [objetivo, setObjetivo] = useState({
-    aprendizaje: "",
-    general: "",
-    particulares: "",
+    aprendizaje: editData?.objetivo?.aprendizaje || "",
+    general: editData?.objetivo?.general || "",
+    particulares: editData?.objetivo?.particulares || "",
   });
 
   useEffect(() => {
@@ -48,37 +49,48 @@ export default function CartaTematicaForm({ onVolver, onMensaje }) {
     onMensaje("");
     try {
       const payload = { ...carta, uea: ueaSeleccionada };
-      await api.post("academics/profesor/cartas/", payload);
+      
+      if (isEditing) {
+        await api.put(`academics/profesor/cartas/${editData.id}/`, payload);
+        onMensaje("✓ Carta temática actualizada exitosamente.");
+      } else {
+        await api.post("academics/profesor/cartas/", payload);
+        onMensaje("✓ Carta temática guardada exitosamente.");
+        
+        // Limpiar formulario solo si estamos creando
+        setCarta({
+          descripcion: "",
+          contenido_sintetico: "",
+          modalidad_conduccion: "",
+          modalidad_evaluacion: "",
+          conocimientos_previos: "",
+          asesorias: "",
+          bibliografia: "",
+          calendarizacion: "",
+        });
+        setUeaSeleccionada("");
+      }
       
       // Si se llenaron datos de objetivo, guardarlo también
       if (objetivo.aprendizaje || objetivo.general || objetivo.particulares) {
-        await api.post("academics/profesor/objetivos/", { 
-          ...objetivo, 
-          uea: ueaSeleccionada 
-        });
+        const objetivoPayload = { ...objetivo, uea: ueaSeleccionada };
+        if (isEditing && editData.objetivo_id) {
+          await api.put(`academics/profesor/objetivos/${editData.objetivo_id}/`, objetivoPayload);
+        } else {
+          await api.post("academics/profesor/objetivos/", objetivoPayload);
+        }
       }
       
-      onMensaje("✓ Carta temática guardada exitosamente. No olvides marcarla como completada cuando esté lista.");
-      // Limpiar formulario
-      setCarta({
-        descripcion: "",
-        contenido_sintetico: "",
-        modalidad_conduccion: "",
-        modalidad_evaluacion: "",
-        conocimientos_previos: "",
-        asesorias: "",
-        bibliografia: "",
-        calendarizacion: "",
-      });
-      setObjetivo({
-        aprendizaje: "",
-        general: "",
-        particulares: "",
-      });
-      setUeaSeleccionada("");
+      if (!isEditing) {
+        setObjetivo({
+          aprendizaje: "",
+          general: "",
+          particulares: "",
+        });
+      }
     } catch (err) {
       console.error(err);
-      onMensaje("✗ Error al guardar la carta temática. Verifica los datos.");
+      onMensaje(`✗ Error al ${isEditing ? 'actualizar' : 'guardar'} la carta temática. Verifica los datos.`);
     } finally {
       setLoading(false);
     }
@@ -87,7 +99,9 @@ export default function CartaTematicaForm({ onVolver, onMensaje }) {
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Crear Carta Temática</h3>
+        <h3 className="font-semibold text-lg">
+          {isEditing ? "Editar Carta Temática" : "Crear Carta Temática"}
+        </h3>
         <button
           onClick={onVolver}
           className="text-sm text-sky-700 hover:underline"
@@ -240,7 +254,10 @@ export default function CartaTematicaForm({ onVolver, onMensaje }) {
         disabled={loading || !ueaSeleccionada}
         className="w-full bg-emerald-600 text-white py-3 rounded hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
       >
-        {loading ? "Guardando..." : "Guardar Carta Temática"}
+        {loading 
+          ? (isEditing ? "Actualizando..." : "Guardando...")
+          : (isEditing ? "Actualizar Carta Temática" : "Guardar Carta Temática")
+        }
       </button>
     </div>
   );
