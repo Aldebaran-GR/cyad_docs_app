@@ -14,7 +14,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-sky-900 text-white px-6 py-4 flex justify-between items-center">
-        <h1 className="font-bold text-xl">CyAD · Gestión de Documentos</h1>
+        <Link to="/" className="font-bold text-xl">CyAD · Gestión de Documentos</Link>
         <button
           className="bg-white text-sky-900 font-semibold px-4 py-1 rounded shadow hover:bg-sky-100 transition"
           onClick={() => navigate("/login")}
