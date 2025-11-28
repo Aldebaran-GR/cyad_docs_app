@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 
-export default function PublicConsulta() {
+export default function PublicConsulta({ initialLicenciaturaId = "", tipoDocumento = "" }) {
   const [licenciaturas, setLicenciaturas] = useState([]);
-  const [licenciaturaId, setLicenciaturaId] = useState("");
+  const [licenciaturaId, setLicenciaturaId] = useState(initialLicenciaturaId);
   const [trimestres, setTrimestres] = useState([]);
   const [trimestre, setTrimestre] = useState("");
   const [ueas, setUeas] = useState([]);
@@ -19,6 +19,13 @@ export default function PublicConsulta() {
     };
     load();
   }, []);
+
+  // Si cambia initialLicenciaturaId desde el padre, actualizar el estado
+  useEffect(() => {
+    if (initialLicenciaturaId && initialLicenciaturaId !== licenciaturaId) {
+      setLicenciaturaId(initialLicenciaturaId);
+    }
+  }, [initialLicenciaturaId]);
 
   useEffect(() => {
     if (!licenciaturaId) return;
@@ -139,31 +146,31 @@ export default function PublicConsulta() {
         Consultar documentos
       </button>
 
-      {documentos && (
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="font-semibold mb-2">Carta temática</h3>
-            {documentos.carta_tematica ? (
-              <div className="text-sm space-y-1">
-                <p><span className="font-semibold">Descripción:</span> {documentos.carta_tematica.descripcion}</p>
-                <p><span className="font-semibold">Contenido sintético:</span> {documentos.carta_tematica.contenido_sintetico}</p>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">Aún no está disponible.</p>
-            )}
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="font-semibold mb-2">Requisitos de recuperación</h3>
-            {documentos.recuperacion ? (
-              <div className="text-sm space-y-1">
-                <p><span className="font-semibold">Duración:</span> {documentos.recuperacion.duracion}</p>
-                <p><span className="font-semibold">Material:</span> {documentos.recuperacion.material}</p>
-                <p><span className="font-semibold">Notas:</span> {documentos.recuperacion.notas}</p>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">Aún no está disponible.</p>
-            )}
-          </div>
+      {documentos && tipoDocumento === "carta" && (
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="font-semibold mb-2">Carta temática</h3>
+          {documentos.carta_tematica ? (
+            <div className="text-sm space-y-1">
+              <p><span className="font-semibold">Descripción:</span> {documentos.carta_tematica.descripcion}</p>
+              <p><span className="font-semibold">Contenido sintético:</span> {documentos.carta_tematica.contenido_sintetico}</p>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Aún no está disponible.</p>
+          )}
+        </div>
+      )}
+      {documentos && tipoDocumento === "recuperacion" && (
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="font-semibold mb-2">Requisitos de recuperación</h3>
+          {documentos.recuperacion ? (
+            <div className="text-sm space-y-1">
+              <p><span className="font-semibold">Duración:</span> {documentos.recuperacion.duracion}</p>
+              <p><span className="font-semibold">Material:</span> {documentos.recuperacion.material}</p>
+              <p><span className="font-semibold">Notas:</span> {documentos.recuperacion.notas}</p>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Aún no está disponible.</p>
+          )}
         </div>
       )}
     </div>
